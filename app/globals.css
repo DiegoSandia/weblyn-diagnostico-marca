@@ -218,66 +218,22 @@ h2 {
   display: block;
 }
 
-.signal-card {
-  position: relative;
+.logo-visual {
+  display: flex;
+  align-items: center;
+  justify-content: center;
   min-height: 720px;
   border-left: 1px solid var(--line);
-  overflow: hidden;
+  padding: clamp(40px, 6vw, 80px);
+  background: radial-gradient(ellipse at 50% 50%, rgba(139, 255, 97, 0.06), transparent 70%);
 }
 
-.portrait {
-  position: absolute;
-  inset: 0;
-  background:
-    radial-gradient(ellipse at 48% 26%, rgba(244, 240, 232, 0.2), transparent 14rem),
-    linear-gradient(135deg, transparent 0 42%, rgba(255, 255, 255, 0.05) 42% 43%, transparent 43%),
-    linear-gradient(180deg, #141414 0%, #090909 68%);
-  opacity: 0.9;
-}
-
-.portrait::after {
-  content: "";
-  position: absolute;
-  top: 12%;
-  left: 19%;
-  width: 42%;
-  aspect-ratio: 0.72;
-  border-radius: 48% 52% 42% 58%;
-  background:
-    radial-gradient(circle at 58% 33%, rgba(244, 240, 232, 0.32), transparent 10%),
-    radial-gradient(circle at 45% 38%, rgba(244, 240, 232, 0.2), transparent 16%),
-    radial-gradient(circle at 54% 54%, rgba(139, 255, 97, 0.06), transparent 28%),
-    #080808;
-  filter: blur(0.2px);
-  box-shadow: 28px 18px 90px rgba(255, 255, 255, 0.08);
-}
-
-.wireframe {
-  position: absolute;
-  border: 1px solid rgba(255, 255, 255, 0.1);
-}
-
-.wireframe.one {
-  right: 8%;
-  bottom: 11%;
-  width: 58%;
-  height: 32%;
-}
-
-.wireframe.two {
-  right: 22%;
-  bottom: 24%;
-  width: 52%;
-  height: 24%;
-}
-
-.brand-mark {
-  position: absolute;
-  right: 12%;
-  bottom: 13%;
-  color: var(--accent);
-  font-family: Georgia, "Times New Roman", serif;
-  font-size: 58px;
+.logo-visual img {
+  width: 100%;
+  max-width: 420px;
+  height: auto;
+  object-fit: contain;
+  filter: drop-shadow(0 0 48px rgba(139, 255, 97, 0.18));
 }
 
 .diagnosis-grid {
@@ -560,7 +516,7 @@ h2 {
     grid-template-columns: 1fr;
   }
 
-  .signal-card {
+  .logo-visual {
     min-height: 340px;
     border-top: 1px solid var(--line);
     border-left: 0;

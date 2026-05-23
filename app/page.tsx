@@ -197,11 +197,9 @@ export default function Home() {
               <ArrowIcon />
             </button>
           </div>
-          <div className="signal-card" aria-hidden="true">
-            <div className="portrait" />
-            <div className="wireframe one" />
-            <div className="wireframe two" />
-            <span className="brand-mark">W</span>
+          <div className="logo-visual" aria-hidden="true">
+            {/* eslint-disable-next-line @next/next/no-img-element */}
+            <img src="/logo.png" alt="WebLynMX" />
           </div>
         </section>
       )}
