@@ -265,7 +265,7 @@ async function sendDiagnosisEmail(answers: DiagnosisAnswers, diagnosis: Record<s
 
   await resend.emails.send({
     from: "WebLynMX Diagnóstico <onboarding@resend.dev>",
-    to: ["weblynmx@gmail.com", "diegoneitor99@gmail.com"],
+    to: ["weblynmx@gmail.com"],
     subject: `🎯 Nuevo diagnóstico: ${answers.businessName}`,
     html,
   });
