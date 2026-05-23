@@ -1,4 +1,5 @@
 import { NextRequest, NextResponse } from "next/server";
+import { Resend } from "resend";
 
 type DiagnosisAnswers = Record<string, string>;
 
@@ -165,7 +166,9 @@ export async function POST(request: NextRequest) {
       return NextResponse.json({ error: "La respuesta de OpenAI llegó vacía." }, { status: 502 });
     }
 
-    return NextResponse.json({ diagnosis });
+    await sendDiagnosisEmail(answers, diagnosis);
+
+    return NextResponse.json({ success: true });
   } catch (error) {
     const message =
       error instanceof SyntaxError
@@ -174,4 +177,96 @@ export async function POST(request: NextRequest) {
 
     return NextResponse.json({ error: message }, { status: 500 });
   }
+}
+
+async function sendDiagnosisEmail(answers: DiagnosisAnswers, diagnosis: Record<string, unknown>) {
+  const apiKey = process.env.RESEND_API_KEY;
+  if (!apiKey) return;
+
+  const resend = new Resend(apiKey);
+
+  const diag = diagnosis as {
+    brandPersonality: string;
+    positioning: string;
+    toneOfVoice: string;
+    visualDirection: string;
+    suggestedPalette: string[];
+    designRecommendations: string[];
+    improvementOpportunities: string[];
+    internalBriefForWebLynMX: string;
+  };
+
+  const html = `
+<!DOCTYPE html>
+<html lang="es">
+<head><meta charset="UTF-8"><style>
+  body { font-family: Arial, sans-serif; background: #0a0a0a; color: #e0e0e0; margin: 0; padding: 24px; }
+  .wrap { max-width: 640px; margin: 0 auto; }
+  h1 { color: #ffffff; font-size: 22px; border-bottom: 1px solid #333; padding-bottom: 12px; }
+  h2 { color: #a0a0a0; font-size: 11px; text-transform: uppercase; letter-spacing: 2px; margin: 28px 0 6px; }
+  p, li { color: #d0d0d0; font-size: 14px; line-height: 1.6; margin: 0 0 4px; }
+  ul { padding-left: 18px; margin: 0; }
+  .section { background: #141414; border: 1px solid #222; border-radius: 8px; padding: 16px 20px; margin-bottom: 12px; }
+  .brief { background: #1a1208; border-color: #3d2e00; }
+  .answers { background: #0d1117; border-color: #1e2a3a; }
+  .tag { display: inline-block; background: #222; color: #888; font-size: 11px; padding: 2px 8px; border-radius: 20px; margin: 2px; }
+</style></head>
+<body>
+<div class="wrap">
+  <h1>🎯 Diagnóstico de Marca — ${answers.businessName}</h1>
+
+  <div class="section">
+    <h2>Personalidad de marca</h2>
+    <p>${diag.brandPersonality}</p>
+  </div>
+
+  <div class="section">
+    <h2>Posicionamiento</h2>
+    <p>${diag.positioning}</p>
+  </div>
+
+  <div class="section">
+    <h2>Tono de voz</h2>
+    <p>${diag.toneOfVoice}</p>
+  </div>
+
+  <div class="section">
+    <h2>Dirección visual</h2>
+    <p>${diag.visualDirection}</p>
+  </div>
+
+  <div class="section">
+    <h2>Paleta sugerida</h2>
+    ${diag.suggestedPalette.map((c) => `<span class="tag">${c}</span>`).join("")}
+  </div>
+
+  <div class="section">
+    <h2>Recomendaciones de diseño</h2>
+    <ul>${diag.designRecommendations.map((r) => `<li>${r}</li>`).join("")}</ul>
+  </div>
+
+  <div class="section">
+    <h2>Oportunidades de mejora</h2>
+    <ul>${diag.improvementOpportunities.map((o) => `<li>${o}</li>`).join("")}</ul>
+  </div>
+
+  <div class="section brief">
+    <h2>Brief interno WebLynMX</h2>
+    <p>${diag.internalBriefForWebLynMX}</p>
+  </div>
+
+  <div class="section answers">
+    <h2>Respuestas del cliente</h2>
+    ${Object.entries(answerLabels).map(([key, label]) => `<p><strong>${label}:</strong> ${answers[key as keyof DiagnosisAnswers]}</p>`).join("")}
+  </div>
+</div>
+</body>
+</html>`;
+
+  await resend.emails.send({
+    from: "WebLynMX Diagnóstico <onboarding@resend.dev>",
+    to: ["weblynmx@gmail.com", "diegoneitor99@gmail.com"],
+    subject: `🎯 Nuevo diagnóstico: ${answers.businessName}`,
+    html,
+  });
 }

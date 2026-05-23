@@ -27,17 +27,6 @@ type DiagnosisAnswers = {
   additionalNotes: string;
 };
 
-type DiagnosisResult = {
-  brandPersonality: string;
-  positioning: string;
-  toneOfVoice: string;
-  visualDirection: string;
-  suggestedPalette: string[];
-  designRecommendations: string[];
-  improvementOpportunities: string[];
-  internalBriefForWebLynMX: string;
-};
-
 const steps: Step[] = [
   {
     key: "businessName",
@@ -140,7 +129,6 @@ export default function Home() {
   const [screen, setScreen] = useState<"landing" | "form" | "loading" | "result">("landing");
   const [currentStep, setCurrentStep] = useState(0);
   const [answers, setAnswers] = useState<DiagnosisAnswers>(initialAnswers);
-  const [result, setResult] = useState<DiagnosisResult | null>(null);
   const [error, setError] = useState("");
 
   const step = steps[currentStep];
@@ -180,7 +168,6 @@ export default function Home() {
         throw new Error(payload.error ?? "No se pudo generar el diagnóstico.");
       }
 
-      setResult(payload.diagnosis);
       setScreen("result");
     } catch (caughtError) {
       setError(
@@ -283,31 +270,11 @@ export default function Home() {
         </section>
       )}
 
-      {screen === "result" && result && (
-        <section className="result-view">
-          <div className="result-hero">
-            <p className="microline">Diagnóstico generado</p>
-            <h2>{answers.businessName || "Marca diagnosticada"}</h2>
-            <button
-              className="ghost-link"
-              type="button"
-              onClick={() => {
-                setCurrentStep(0);
-                setScreen("form");
-              }}
-            >
-              Editar respuestas
-            </button>
-          </div>
-
-          <ResultBlock title="Personalidad de marca" content={result.brandPersonality} />
-          <ResultBlock title="Posicionamiento" content={result.positioning} />
-          <ResultBlock title="Tono de voz" content={result.toneOfVoice} />
-          <ResultBlock title="Dirección visual" content={result.visualDirection} />
-          <ListBlock title="Paleta sugerida" items={result.suggestedPalette} palette />
-          <ListBlock title="Recomendaciones de diseño" items={result.designRecommendations} />
-          <ListBlock title="Oportunidades de mejora" items={result.improvementOpportunities} />
-          <ResultBlock title="Brief interno para WebLynMX" content={result.internalBriefForWebLynMX} wide />
+      {screen === "result" && (
+        <section className="loading-state panel-bleed">
+          <div className="scanner" />
+          <h2>¡Listo, {answers.businessName}!</h2>
+          <p>Recibimos tu información. El equipo de WebLynMX la está revisando y te contactará pronto.</p>
         </section>
       )}
     </main>
@@ -330,28 +297,6 @@ function Header({ onStart }: { onStart: () => void }) {
         <ArrowIcon />
       </button>
     </header>
-  );
-}
-
-function ResultBlock({ title, content, wide = false }: { title: string; content: string; wide?: boolean }) {
-  return (
-    <article className={wide ? "result-card wide" : "result-card"}>
-      <span>{title}</span>
-      <p>{content}</p>
-    </article>
-  );
-}
-
-function ListBlock({ title, items, palette = false }: { title: string; items: string[]; palette?: boolean }) {
-  return (
-    <article className="result-card">
-      <span>{title}</span>
-      <ul className={palette ? "palette-list" : ""}>
-        {items.map((item) => (
-          <li key={item}>{item}</li>
-        ))}
-      </ul>
-    </article>
   );
 }
 
