@@ -71,7 +71,7 @@ a {
 
 .site-header {
   display: grid;
-  grid-template-columns: 1fr auto 1fr;
+  grid-template-columns: 1fr auto;
   align-items: center;
   min-height: 88px;
   padding: 0 32px;
@@ -79,6 +79,9 @@ a {
 }
 
 .logo {
+  display: inline-flex;
+  align-items: center;
+  gap: 12px;
   width: fit-content;
   text-decoration: none;
   font-size: 18px;
@@ -86,26 +89,22 @@ a {
   letter-spacing: 0.12em;
 }
 
-.logo span,
+.logo img {
+  width: 42px;
+  height: 42px;
+  border-radius: 50%;
+  object-fit: cover;
+  object-position: center 33%;
+  filter: drop-shadow(0 0 14px rgba(139, 255, 97, 0.32));
+}
+
+.logo span {
+  color: var(--text);
+}
+
 .landing h1 span,
 .step-meta span:first-child {
   color: var(--accent);
-}
-
-.site-header nav {
-  display: flex;
-  gap: 34px;
-  color: var(--muted);
-  font-size: 13px;
-}
-
-.site-header nav a {
-  text-decoration: none;
-  transition: color 180ms ease;
-}
-
-.site-header nav a:hover {
-  color: var(--text);
 }
 
 .site-header button,
@@ -218,22 +217,39 @@ h2 {
   display: block;
 }
 
-.logo-visual {
-  display: flex;
-  align-items: center;
-  justify-content: center;
+.signal-card {
+  display: grid;
+  place-items: center;
+  position: relative;
   min-height: 720px;
   border-left: 1px solid var(--line);
-  padding: clamp(40px, 6vw, 80px);
-  background: radial-gradient(ellipse at 50% 50%, rgba(139, 255, 97, 0.06), transparent 70%);
+  overflow: hidden;
+  background:
+    radial-gradient(circle at 50% 48%, rgba(139, 255, 97, 0.16), transparent 19rem),
+    linear-gradient(180deg, rgba(255, 255, 255, 0.035), transparent 48%),
+    #050505;
 }
 
-.logo-visual img {
-  width: 100%;
-  max-width: 420px;
+.logo-orbit {
+  position: absolute;
+  width: min(82%, 560px);
+  aspect-ratio: 1;
+  border: 1px solid rgba(139, 255, 97, 0.32);
+  border-radius: 50%;
+  box-shadow:
+    inset 0 0 42px rgba(139, 255, 97, 0.08),
+    0 0 90px rgba(139, 255, 97, 0.1);
+}
+
+.hero-brand-logo {
+  position: relative;
+  z-index: 1;
+  width: min(86%, 620px);
   height: auto;
   object-fit: contain;
-  filter: drop-shadow(0 0 48px rgba(139, 255, 97, 0.18));
+  filter:
+    drop-shadow(0 0 28px rgba(139, 255, 97, 0.18))
+    drop-shadow(0 22px 80px rgba(0, 0, 0, 0.74));
 }
 
 .diagnosis-grid {
@@ -506,17 +522,13 @@ h2 {
     grid-template-columns: 1fr auto;
   }
 
-  .site-header nav {
-    display: none;
-  }
-
   .landing,
   .diagnosis-grid,
   .result-view {
     grid-template-columns: 1fr;
   }
 
-  .logo-visual {
+  .signal-card {
     min-height: 340px;
     border-top: 1px solid var(--line);
     border-left: 0;
@@ -572,6 +584,10 @@ h2 {
     min-height: 44px;
     padding: 0 12px;
     font-size: 12px;
+  }
+
+  .logo span {
+    display: none;
   }
 
   .panel-bleed,

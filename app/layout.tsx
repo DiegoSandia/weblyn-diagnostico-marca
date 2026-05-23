@@ -2,9 +2,11 @@ import type { Metadata } from "next";
 import "./globals.css";
 
 export const metadata: Metadata = {
-  title: "Diagnóstico de Marca — WebLynMX",
+  title: "WebLynMX Brand Diagnosis",
   description: "Diagnóstico estratégico de marca con análisis generado por OpenAI.",
-  icons: { icon: "/favicon.png" },
+  icons: {
+    icon: "/weblyn-logo.png",
+  },
 };
 
 export default function RootLayout({

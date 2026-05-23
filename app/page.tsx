@@ -1,5 +1,6 @@
 "use client";
 
+import Image from "next/image";
 import { FormEvent, useMemo, useState } from "react";
 
 type Step = {
@@ -25,6 +26,17 @@ type DiagnosisAnswers = {
   currentNeed: string;
   currentMaterials: string;
   additionalNotes: string;
+};
+
+type DiagnosisResult = {
+  brandPersonality: string;
+  positioning: string;
+  toneOfVoice: string;
+  visualDirection: string;
+  suggestedPalette: string[];
+  designRecommendations: string[];
+  improvementOpportunities: string[];
+  internalBriefForWebLynMX: string;
 };
 
 const steps: Step[] = [
@@ -129,6 +141,7 @@ export default function Home() {
   const [screen, setScreen] = useState<"landing" | "form" | "loading" | "result">("landing");
   const [currentStep, setCurrentStep] = useState(0);
   const [answers, setAnswers] = useState<DiagnosisAnswers>(initialAnswers);
+  const [result, setResult] = useState<DiagnosisResult | null>(null);
   const [error, setError] = useState("");
 
   const step = steps[currentStep];
@@ -168,6 +181,7 @@ export default function Home() {
         throw new Error(payload.error ?? "No se pudo generar el diagnóstico.");
       }
 
+      setResult(payload.diagnosis);
       setScreen("result");
     } catch (caughtError) {
       setError(
@@ -189,17 +203,24 @@ export default function Home() {
           <div className="landing-copy">
             <p className="microline">Diagnóstico estratégico de marca</p>
             <h1>
-              No diseñamos logos.
-              <span> Diseñamos percepción.</span>
+              Queremos conocer más
+              <span> sobre tu marca.</span>
             </h1>
             <button className="primary-button" type="button" onClick={() => setScreen("form")}>
               Iniciar diagnóstico
               <ArrowIcon />
             </button>
           </div>
-          <div className="logo-visual" aria-hidden="true">
-            {/* eslint-disable-next-line @next/next/no-img-element */}
-            <img src="/logo.png" alt="WebLynMX" />
+          <div className="signal-card">
+            <div className="logo-orbit" aria-hidden="true" />
+            <Image
+              className="hero-brand-logo"
+              src="/weblyn-logo.png"
+              alt="WebLynMX"
+              width={1254}
+              height={1254}
+              priority
+            />
           </div>
         </section>
       )}
@@ -268,11 +289,31 @@ export default function Home() {
         </section>
       )}
 
-      {screen === "result" && (
-        <section className="loading-state panel-bleed">
-          <div className="scanner" />
-          <h2>¡Listo, {answers.businessName}!</h2>
-          <p>Recibimos tu información. El equipo de WebLynMX la está revisando y te contactará pronto.</p>
+      {screen === "result" && result && (
+        <section className="result-view">
+          <div className="result-hero">
+            <p className="microline">Diagnóstico generado</p>
+            <h2>{answers.businessName || "Marca diagnosticada"}</h2>
+            <button
+              className="ghost-link"
+              type="button"
+              onClick={() => {
+                setCurrentStep(0);
+                setScreen("form");
+              }}
+            >
+              Editar respuestas
+            </button>
+          </div>
+
+          <ResultBlock title="Personalidad de marca" content={result.brandPersonality} />
+          <ResultBlock title="Posicionamiento" content={result.positioning} />
+          <ResultBlock title="Tono de voz" content={result.toneOfVoice} />
+          <ResultBlock title="Dirección visual" content={result.visualDirection} />
+          <ListBlock title="Paleta sugerida" items={result.suggestedPalette} palette />
+          <ListBlock title="Recomendaciones de diseño" items={result.designRecommendations} />
+          <ListBlock title="Oportunidades de mejora" items={result.improvementOpportunities} />
+          <ResultBlock title="Brief interno para WebLynMX" content={result.internalBriefForWebLynMX} wide />
         </section>
       )}
     </main>
@@ -283,18 +324,36 @@ function Header({ onStart }: { onStart: () => void }) {
   return (
     <header className="site-header">
       <a className="logo" href="#" aria-label="WebLynMX">
-        WEBLYN<span>MX</span>
+        <Image src="/weblyn-logo.png" alt="" width={1254} height={1254} priority />
+        <span>WEBLYNMX</span>
       </a>
-      <nav aria-label="Secciones">
-        <a href="#diagnostico">Diagnóstico</a>
-        <a href="#metodo">Método</a>
-        <a href="#brief">Brief</a>
-      </nav>
       <button type="button" onClick={onStart}>
         Iniciar diagnóstico
         <ArrowIcon />
       </button>
     </header>
+  );
+}
+
+function ResultBlock({ title, content, wide = false }: { title: string; content: string; wide?: boolean }) {
+  return (
+    <article className={wide ? "result-card wide" : "result-card"}>
+      <span>{title}</span>
+      <p>{content}</p>
+    </article>
+  );
+}
+
+function ListBlock({ title, items, palette = false }: { title: string; items: string[]; palette?: boolean }) {
+  return (
+    <article className="result-card">
+      <span>{title}</span>
+      <ul className={palette ? "palette-list" : ""}>
+        {items.map((item) => (
+          <li key={item}>{item}</li>
+        ))}
+      </ul>
+    </article>
   );
 }
 
